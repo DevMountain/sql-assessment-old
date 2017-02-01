@@ -25,15 +25,16 @@ var db = massive.connect({connectionString : connString},
 
 
 app.post('/api/users', function(req, res){
+  console.log(req.body);
   var slot = req.body;
-  db.user_create_seed([slot.firstname, slot.lastname, slot.email], function(err, result){
+  db.add_user([slot.firstname, slot.lastname, slot.email], function(err, result){
     res.json(result);
   })
 });
 
 app.post('/api/vehicles', function(req, res){
   var slot = req.body;
-  db.vehicle_create_seed([slot.make, slot.model, slot.year, slot.ownerId], function(err, result){
+  db.add_vehicle([slot.make, slot.model, slot.year, slot.ownerId], function(err, result){
     res.json(result);
   })
 });
@@ -56,10 +57,10 @@ app.get('/api/user/:userId/vehiclecount', function(req, res){
     count: 0
   }
   db.get_vehicle_count_for_given_user([req.params.userId],function(err, response){
-    console.log(response);
     for(var i = 0; i < response.length; i++){
       obj.count += 1;
     }
+    obj.count = obj.count.toString();
     res.json(obj);
   })
 })
@@ -78,7 +79,6 @@ app.get('/api/vehicle', function(req, res) {
         });
     } else {
         db.get_vehicle_by_user_email(req.query.UserEmail, function(err, resp) {
-                console.log(resp);
                 res.status(200).send(resp);
         });
     }
@@ -87,7 +87,6 @@ app.get('/api/vehicle', function(req, res) {
 
 app.get('/api/newervehiclesbyyear', function(req, res){
   db.get_cars_by_year(function(err, response){
-    console.log(response);
     res.status(200).json(response);
   })
 })
